@@ -1,76 +1,52 @@
 import React, { useState } from 'react';
 import { Button, Typography, Container, Grid, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const Preferences = () => {
-  const [preferences, setPreferences] = useState({
-    outdoor: {
-      parks: false,
-      beaches: false,
-      gardens: false,
-      viewpoints: false,
-      monuments: false,
-      zoos: false,
-    },
-    cultural: {
-      churches: false,
-      museums: false,
-      artGalleries: false,
-    },
-    entertainment: {
-      theatres: false,
-      danceClubs: false,
-      pubsBars: false,
-      swimmingPools: false,
-    },
-    shoppingDining: {
-      malls: false,
-      restaurants: false,
-      burgerPizza: false,
-      juiceBars: false,
-      bakeries: false,
-      cafes: false,
-    },
-    accommodation: {
-      hotels: false,
-    },
-    wellness: {
-      gyms: false,
-      beautySpas: false,
-    },
-    localServices: {
-      localServices: false,
-    },
-  });
+  const [preferences, setPreferences] = useState([]);
+  
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // Hook to navigate between routes
-
-  const handleToggle = (group, name) => {
-    setPreferences((prevState) => ({
-      ...prevState,
-      [group]: {
-        ...prevState[group],
-        [name]: !prevState[group][name],
-      },
-    }));
+  const handleToggle = (preference) => {
+    setPreferences((prevPreferences) => {
+      if (prevPreferences.includes(preference)) {
+        // Remove preference if already selected
+        return prevPreferences.filter((pref) => pref !== preference);
+      } else {
+        // Add preference if not already selected
+        return [...prevPreferences, preference];
+      }
+    });
   };
 
   const handleSubmit = () => {
     console.log(preferences);
-    // Navigate to the recommendations page when the user clicks Submit
-    navigate('/recommendations', { state: { preferences } }); // Pass preferences as state
+    navigate('/recommendations', { state: { preferences } });
   };
 
-  const renderButton = (group, name, label) => (
-    <Button
-      variant={preferences[group][name] ? 'contained' : 'outlined'}
-      color={preferences[group][name] ? 'primary' : 'default'}
-      onClick={() => handleToggle(group, name)}
-      sx={{ width: '100%' }} // Make buttons full width in their grid cell
-    >
-      {label}
-    </Button>
-  );
+  const renderButton = (preference, label) => {
+    const isSelected = preferences.includes(preference);
+
+    return (
+      <Button
+        variant="contained"
+        sx={{
+          width: '100%',
+          backgroundColor: isSelected ? 'primary.main' : 'grey.300',
+          color: isSelected ? 'white' : 'black',
+          '&:hover': {
+            backgroundColor: isSelected ? 'primary.dark' : 'grey.400',
+          },
+          transition: 'background-color 0.3s ease',
+        }}
+        onClick={() => handleToggle(preference)}
+      >
+        <Typography variant="body1">
+          {label}
+        </Typography>
+      </Button>
+    );
+  };
 
   return (
     <Container maxWidth="sm" sx={{ backgroundColor: 'white', padding: '2rem', borderRadius: '10px' }}>
@@ -81,59 +57,59 @@ const Preferences = () => {
       {/* Outdoor Attractions */}
       <Typography variant="h6" gutterBottom>Outdoor Attractions</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('outdoor', 'parks', 'Parks')}</Grid>
-        <Grid item xs={6}>{renderButton('outdoor', 'beaches', 'Beaches')}</Grid>
-        <Grid item xs={6}>{renderButton('outdoor', 'gardens', 'Gardens')}</Grid>
-        <Grid item xs={6}>{renderButton('outdoor', 'viewpoints', 'Viewpoints')}</Grid>
-        <Grid item xs={6}>{renderButton('outdoor', 'monuments', 'Monuments')}</Grid>
-        <Grid item xs={6}>{renderButton('outdoor', 'zoos', 'Zoos')}</Grid>
+        <Grid item xs={6}>{renderButton('Parks', 'Parks')}</Grid>
+        <Grid item xs={6}>{renderButton('Beaches', 'Beaches')}</Grid>
+        <Grid item xs={6}>{renderButton('Gardens', 'Gardens')}</Grid>
+        <Grid item xs={6}>{renderButton('Viewpoints', 'Viewpoints')}</Grid>
+        <Grid item xs={6}>{renderButton('Monuments', 'Monuments')}</Grid>
+        <Grid item xs={6}>{renderButton('Zoos', 'Zoos')}</Grid>
       </Grid>
 
       {/* Cultural & Historical */}
       <Typography variant="h6" gutterBottom mt={2}>Cultural & Historical</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('cultural', 'churches', 'Churches')}</Grid>
-        <Grid item xs={6}>{renderButton('cultural', 'museums', 'Museums')}</Grid>
-        <Grid item xs={6}>{renderButton('cultural', 'artGalleries', 'Art Galleries')}</Grid>
+        <Grid item xs={6}>{renderButton('Churches', 'Churches')}</Grid>
+        <Grid item xs={6}>{renderButton('Museums', 'Museums')}</Grid>
+        <Grid item xs={6}>{renderButton('Art Galleries', 'Art Galleries')}</Grid>
       </Grid>
 
       {/* Entertainment & Nightlife */}
       <Typography variant="h6" gutterBottom mt={2}>Entertainment & Nightlife</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('entertainment', 'theatres', 'Theatres')}</Grid>
-        <Grid item xs={6}>{renderButton('entertainment', 'danceClubs', 'Dance Clubs')}</Grid>
-        <Grid item xs={6}>{renderButton('entertainment', 'pubsBars', 'Pubs/Bars')}</Grid>
-        <Grid item xs={6}>{renderButton('entertainment', 'swimmingPools', 'Swimming Pools')}</Grid>
+        <Grid item xs={6}>{renderButton('Theatres', 'Theatres')}</Grid>
+        <Grid item xs={6}>{renderButton('Dance Clubs', 'Dance Clubs')}</Grid>
+        <Grid item xs={6}>{renderButton('Pubs/Bars', 'Pubs/Bars')}</Grid>
+        <Grid item xs={6}>{renderButton('Swimming Pools', 'Swimming Pools')}</Grid>
       </Grid>
 
       {/* Shopping & Dining */}
       <Typography variant="h6" gutterBottom mt={2}>Shopping & Dining</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('shoppingDining', 'malls', 'Malls')}</Grid>
-        <Grid item xs={6}>{renderButton('shoppingDining', 'restaurants', 'Restaurants')}</Grid>
-        <Grid item xs={6}>{renderButton('shoppingDining', 'burgerPizza', 'Burger/Pizza Shops')}</Grid>
-        <Grid item xs={6}>{renderButton('shoppingDining', 'juiceBars', 'Juice Bars')}</Grid>
-        <Grid item xs={6}>{renderButton('shoppingDining', 'bakeries', 'Bakeries')}</Grid>
-        <Grid item xs={6}>{renderButton('shoppingDining', 'cafes', 'Cafes')}</Grid>
+        <Grid item xs={6}>{renderButton('Malls', 'Malls')}</Grid>
+        <Grid item xs={6}>{renderButton('Restaurants', 'Restaurants')}</Grid>
+        <Grid item xs={6}>{renderButton('Burger/Pizza Shops', 'Burger/Pizza')}</Grid>
+        <Grid item xs={6}>{renderButton('Juice Bars', 'Juice Bars')}</Grid>
+        <Grid item xs={6}>{renderButton('Bakeries', 'Bakeries')}</Grid>
+        <Grid item xs={6}>{renderButton('Cafes', 'Cafes')}</Grid>
       </Grid>
 
       {/* Accommodation */}
       <Typography variant="h6" gutterBottom mt={2}>Accommodation</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('accommodation', 'hotels', 'Hotels/Other Lodgings')}</Grid>
+        <Grid item xs={6}>{renderButton('Hotels', 'Hotels/Other Lodgings')}</Grid>
       </Grid>
 
       {/* Health & Wellness */}
       <Typography variant="h6" gutterBottom mt={2}>Health & Wellness</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('wellness', 'gyms', 'Gyms')}</Grid>
-        <Grid item xs={6}>{renderButton('wellness', 'beautySpas', 'Beauty & Spas')}</Grid>
+        <Grid item xs={6}>{renderButton('Gyms', 'Gyms')}</Grid>
+        <Grid item xs={6}>{renderButton('Beauty & Spas', 'Beauty & Spas')}</Grid>
       </Grid>
 
       {/* Local Services */}
       <Typography variant="h6" gutterBottom mt={2}>Local Services</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>{renderButton('localServices', 'localServices', 'Local Services')}</Grid>
+        <Grid item xs={6}>{renderButton('Local Services', 'Local Services')}</Grid>
       </Grid>
 
       <Box mt={4}>

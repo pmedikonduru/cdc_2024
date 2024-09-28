@@ -8,7 +8,7 @@ const Header = () => {
       <Container>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', fontFamily: 'Montserrat, sans-serif' }}>
-            Travel Recommendation
+            TravelSpark✈️
           </Typography>
           <div>
             <Button color="inherit" component={Link} to="/" sx={{ marginLeft: '1rem', fontWeight: '500' }}>
@@ -22,9 +22,6 @@ const Header = () => {
             </Button>
             <Button color="inherit" component={Link} to="/about" sx={{ marginLeft: '1rem', fontWeight: '500' }}>
               About
-            </Button>
-            <Button color="inherit" component={Link} to="/contact" sx={{ marginLeft: '1rem', fontWeight: '500' }}>
-              Contact
             </Button>
           </div>
         </Toolbar>

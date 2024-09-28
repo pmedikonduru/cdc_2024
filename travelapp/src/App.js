@@ -8,7 +8,6 @@ import Home from './components/Home';
 import Preferences from './components/Preferences';
 import Recommendations from './components/Recommendations';
 import About from './components/About';
-import Contact from './components/Contact';
 
 const theme = createTheme({
   palette: {
@@ -38,7 +37,6 @@ const App = () => {
           <Route path="/preferences" element={<Preferences />} />
           <Route path="/recommendations" element={<Recommendations />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
         </Routes>
         <Footer />
       </Router>
