@@ -21,8 +21,30 @@ const Preferences = () => {
 
   const handleSubmit = () => {
     console.log(preferences);
-    navigate('/recommendations', { state: { preferences } });
-  };
+
+    // Send selected preferences to the backend
+    fetch('/api/preferences', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ preferences }), // Send preferences as JSON
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log('Success:', data);
+        // You can now navigate to the recommendations page or show the recommendations based on the response
+        navigate('/recommendations', { state: { preferences: data.recommendations } }); // Adjust according to your response structure
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+};
 
   const renderButton = (preference, label) => {
     const isSelected = preferences.includes(preference);
