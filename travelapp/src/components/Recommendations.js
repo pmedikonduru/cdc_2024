@@ -1,69 +1,82 @@
 import React from 'react';
-import { Box, Typography, Button, Card, CardMedia, CardContent } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { Box, Typography, Card, CardContent, List, ListItem, ListItemText, Button } from '@mui/material';
 
 const Recommendations = () => {
-    const location = useLocation();
-    const { recommendations } = location.state || { recommendations: { cities: [], activities: [] } }; // Ensure safe access
-
-    const { cities, activities } = recommendations;
+    // Hard-coded data for demonstration
+    const recommendedCity = "Paris, France";
+    const tripAdvisorLocations = [
+        "Eiffel Tower",
+        "Louvre Museum",
+        "Notre-Dame Cathedral",
+        "Arc de Triomphe",
+        "Seine River Cruise"
+    ];
+    const flights = [
+        { airline: "Air France", price: "$650", departure: "10:00 AM" },
+        { airline: "Lufthansa", price: "$720", departure: "2:30 PM" },
+        { airline: "British Airways", price: "$680", departure: "8:45 PM" }
+    ];
 
     return (
-        <Box sx={{ padding: '2rem', textAlign: 'center' }}>
-            <Typography variant="h4" gutterBottom>
-                Based on Your Preferences
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-                Here are some experiences you might love!
+        <Box sx={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+            <Typography variant="h4" gutterBottom textAlign="center">
+                Your Personalized Recommendation
             </Typography>
 
-            {/* Recommended Cities */}
-            <Typography variant="h5" gutterBottom>
-                Recommended Cities
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                {cities.map((city, index) => (
-                    <Card key={index} sx={{ margin: '1rem', width: '300px' }}>
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {city}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                ))}
-            </Box>
+            {/* Recommended City */}
+            <Card sx={{ marginBottom: '2rem' }}>
+                <CardContent>
+                    <Typography variant="h5" gutterBottom>
+                        Recommended City: {recommendedCity}
+                    </Typography>
+                    <Typography variant="body1">
+                        Based on your preferences, we think you'll love visiting {recommendedCity}!
+                    </Typography>
+                </CardContent>
+            </Card>
 
-            {/* Recommended Activities */}
-            <Typography variant="h5" gutterBottom mt={4}>
-                Recommended Activities
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                {activities.map((activity, index) => (
-                    <Card key={index} sx={{ margin: '1rem', width: '300px' }}>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={activity.image} // You may need to provide an image for activities
-                            alt={activity.title}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {activity.title}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {activity.description}
-                            </Typography>
-                            <Button variant="contained" color="primary" sx={{ marginTop: '1rem' }}>
-                                Learn More
-                            </Button>
-                        </CardContent>
-                    </Card>
-                ))}
-            </Box>
+            {/* TripAdvisor Locations */}
+            <Card sx={{ marginBottom: '2rem' }}>
+                <CardContent>
+                    <Typography variant="h5" gutterBottom>
+                        Top Places to Visit in {recommendedCity}
+                    </Typography>
+                    <List>
+                        {tripAdvisorLocations.map((location, index) => (
+                            <ListItem key={index}>
+                                <ListItemText primary={location} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </CardContent>
+            </Card>
 
-            <Button variant="outlined" sx={{ marginTop: '2rem' }}>
-                Explore More Options
-            </Button>
+            {/* Flights */}
+            <Card>
+                <CardContent>
+                    <Typography variant="h5" gutterBottom>
+                        Available Flights to {recommendedCity}
+                    </Typography>
+                    <List>
+                        {flights.map((flight, index) => (
+                            <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <ListItemText 
+                                    primary={flight.airline} 
+                                    secondary={`Departure: ${flight.departure}`} 
+                                />
+                                <Box>
+                                    <Typography variant="h6" component="span" sx={{ marginRight: '1rem' }}>
+                                        {flight.price}
+                                    </Typography>
+                                    <Button variant="contained" color="primary">
+                                        Book
+                                    </Button>
+                                </Box>
+                            </ListItem>
+                        ))}
+                    </List>
+                </CardContent>
+            </Card>
         </Box>
     );
 };

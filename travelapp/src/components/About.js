@@ -2,9 +2,7 @@
 import React from 'react';
 import { Box, Typography, Container, Grid } from '@mui/material'; // Import Material-UI components
 import Travel1 from '../assets/travel1.jpg'; // Import travel images
-import Travel2 from '../assets/travel2.jpg';
-import Travel3 from '../assets/travel3.jpg';
-import Travel4 from '../assets/travel4.jpg';
+import Travel2 from '../assets/travel2.jpeg';
 
 const About = () => {
     return (
@@ -41,7 +39,7 @@ const About = () => {
                 </Typography>
 
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', marginTop: '2rem' }}>
-                    Our Travels:
+                    Creators:
                 </Typography>
 
                 {/* Grid for travel pictures */}
@@ -57,20 +55,6 @@ const About = () => {
                         <img 
                             src={Travel2} // Use imported image
                             alt="Travel 2"
-                            style={{ width: '100%', borderRadius: '10px' }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <img 
-                            src={Travel3} // Use imported image
-                            alt="Travel 3"
-                            style={{ width: '100%', borderRadius: '10px' }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <img 
-                            src={Travel4} // Use imported image
-                            alt="Travel 4"
                             style={{ width: '100%', borderRadius: '10px' }}
                         />
                     </Grid>

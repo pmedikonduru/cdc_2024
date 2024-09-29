@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Typography, Container, Grid, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Preferences = () => {
   const [preferences, setPreferences] = useState([]);
@@ -23,12 +24,21 @@ const Preferences = () => {
     console.log(preferences);
 
     // Send selected preferences to the backend
-    fetch('/api/preferences', {
+  //   try {
+  //   const response = await axios.post(
+  //     "/api/preferences",
+  //     { preferences : event.target.value},
+  //   )
+  //   setPreferences(response.data);
+  // } catch (error) {
+  //   console.error('Error:', error);
+  // }
+    fetch('http://localhost:5000/api/preferences', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ preferences }), // Send preferences as JSON
+        body: JSON.stringify({ preferences })
     })
     .then((response) => {
         if (!response.ok) {
@@ -38,13 +48,13 @@ const Preferences = () => {
     })
     .then((data) => {
         console.log('Success:', data);
-        // You can now navigate to the recommendations page or show the recommendations based on the response
-        navigate('/recommendations', { state: { preferences: data.recommendations } }); // Adjust according to your response structure
+        // Navigate to the recommendations page with the received data
+        navigate('/recommendations', { state: { recommendations: data } });
     })
     .catch((error) => {
         console.error('Error:', error);
     });
-};
+  };
 
   const renderButton = (preference, label) => {
     const isSelected = preferences.includes(preference);

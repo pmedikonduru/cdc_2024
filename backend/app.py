@@ -4,9 +4,10 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
 import requests
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+# CORS(app, origins=["*"])
 
 # TripAdvisor and SkyScanner API keys
 TRIPADVISOR_API_KEY = 'C335434239844AB38B263FB395EC4A3E'
@@ -14,11 +15,17 @@ AMADEUS_API_KEY = '2EkhPLIlrYp3tVH7uqtGzty6q1gUQWGx'
 AMADEUS_API_SECRET = 'y5Ff1mNZGlc34lX6'
 
 #dataset cleaning
-df = pd.read_excel("/Users/pranav_medikonduru/Downloads/Social_Science_Dataset.xlsx")
+df = pd.read_excel("backend/Social_Science_Dataset.xlsx")
 df.columns = ['user'] + [f'category {i}' for i in range(1, 26)]
 df.drop(columns=['category 25'], inplace=True)
 df.drop(index=0, inplace=True)
 df.reset_index(drop=True, inplace=True)
+
+# Convert all columns except 'user' to numeric, coercing errors to NaN
+for col in df.columns:
+    if col != 'user':
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
 cleaned_df = df.replace(0, np.nan)
 numeric_cols = cleaned_df.select_dtypes(include=[np.number]).columns
 cleaned_df[numeric_cols] = cleaned_df[numeric_cols].fillna(cleaned_df[numeric_cols].mean())
@@ -47,19 +54,21 @@ normalized_discounted_df = discounted_df.fillna(0)
 item_similarity = cosine_similarity(normalized_discounted_df.T)
 item_similarity_df = pd.DataFrame(item_similarity, index=X.columns, columns=X.columns)
 
+# Modify the city_activity_mapping
 city_activity_mapping = {
-    'Paris': [0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1],
-    'Barcelona': [1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1],
-    'Moscow': []
-    # add more OR find api
-    }
+    'Paris':    [0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    'Barcelona': [1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+    'Moscow':    [0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]
+    # Add more cities as needed, ensuring each has 24 values (one for each activity)
+}
 
 cities = list(city_activity_mapping.keys())
 city_activity_matrix = np.array(list(city_activity_mapping.values()))
 
 activities = ['churches', 'resorts', 'beaches', 'parks', 'theatres', 'museums', 'malls', 'zoos', 
-              'restaurants', 'art galleries', 'dance clubs', 'swimming pools', 'gyms', 'bakeries',
-              'beauty & spas', 'cafes', 'view points', 'monuments', 'gardens', 'gardens']
+              'restaurants', 'pubs/bars', 'local services', 'burger/pizza shops', 'hotels/other lodgings',
+              'juice bars', 'art galleries', 'dance clubs', 'swimming pools', 'gyms', 'bakeries',
+              'beauty & spas', 'cafes', 'view points', 'monuments', 'gardens']
 
 #Get user location city
 def get_user_city(ip):
@@ -163,6 +172,22 @@ def recommend_activities():
     
     return jsonify({'recommended_activities': recommended_activities.index.tolist()})
 
+
+@app.route('/api/preferences', methods=['POST'])
+# @cross_origin()
+def process_preferences():
+    user_preferences = request.json.get('preferences', [])
+    # user_preferences = request.get_json()
+    # print(user_preferences)
+    
+    # Call the existing functions to get recommendations
+    city_recommendations = recommend_cities()
+    activity_recommendations = recommend_activities()
+    
+    return jsonify({
+        'recommended_cities': city_recommendations['recommended_cities'],
+        'recommended_activities': activity_recommendations['recommended_activities']
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
