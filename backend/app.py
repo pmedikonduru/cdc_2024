@@ -10,9 +10,9 @@ app = Flask(__name__)
 # CORS(app, origins=["*"])
 
 # TripAdvisor and SkyScanner API keys
-TRIPADVISOR_API_KEY = 'C335434239844AB38B263FB395EC4A3E'
-AMADEUS_API_KEY = '2EkhPLIlrYp3tVH7uqtGzty6q1gUQWGx'
-AMADEUS_API_SECRET = 'y5Ff1mNZGlc34lX6'
+TRIPADVISOR_API_KEY = 'XXX'
+AMADEUS_API_KEY = 'XXX'
+AMADEUS_API_SECRET = 'XXX'
 
 #dataset cleaning
 df = pd.read_excel("backend/Social_Science_Dataset.xlsx")
