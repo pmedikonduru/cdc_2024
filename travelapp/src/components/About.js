@@ -34,10 +34,10 @@ const About = () => {
                 <Typography variant="h6" gutterBottom sx={{ marginBottom: '1.5rem', fontFamily: 'Roboto, sans-serif' }}>
                 Hello! Hola! Bonjour! We're just two college students with a passion for travel!
                 We hope this app inspires you to embark on your own unforgettable adventures.
-                Join us as we share vibrant cultures, diverse cuisines, and seek out thrilling experiences around the globe!
+                Join us as we share vibrant cultures, diverse cuisines, and thrilling experiences around the globe!
                 </Typography>
                 <Typography variant="body2" sx={{ fontFamily: 'Roboto, sans-serif', marginBottom: '1.5rem' }}>
-                This app was built for the Carolina Data Challenge 2024.
+                This app was built for the 2024 Carolina Data Challenge.
                 </Typography>
 
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', marginTop: '2rem' }}>
