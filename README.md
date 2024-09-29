@@ -47,7 +47,7 @@ This application provides personalized travel recommendations based on user pref
 
 ## Getting Started
 
-[Include instructions for setting up and running the application locally]
+
 
 ## API Keys
 
@@ -55,12 +55,11 @@ To run this application, you'll need to obtain API keys for:
 - TripAdvisor
 - Amadeus
 
-[Include instructions on where to place these API keys in the code]
+
 
 ## Contributing
 
-[Include guidelines for contributing to the project]
+
 
 ## License
 
-[Specify the license under which this project is released]
