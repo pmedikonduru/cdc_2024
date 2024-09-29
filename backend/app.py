@@ -3,10 +3,17 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
+import requests
 
 
 app = Flask(__name__)
 
+# TripAdvisor and SkyScanner API keys
+TRIPADVISOR_API_KEY = 'C335434239844AB38B263FB395EC4A3E'
+AMADEUS_API_KEY = '2EkhPLIlrYp3tVH7uqtGzty6q1gUQWGx'
+AMADEUS_API_SECRET = 'y5Ff1mNZGlc34lX6'
+
+#dataset cleaning
 df = pd.read_excel("/Users/pranav_medikonduru/Downloads/Social_Science_Dataset.xlsx")
 df.columns = ['user'] + [f'category {i}' for i in range(1, 26)]
 df.drop(columns=['category 25'], inplace=True)
@@ -43,8 +50,9 @@ item_similarity_df = pd.DataFrame(item_similarity, index=X.columns, columns=X.co
 city_activity_mapping = {
     'Paris': [0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1],
     'Barcelona': [1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1],
+    'Moscow': []
     # add more OR find api
-}
+    }
 
 cities = list(city_activity_mapping.keys())
 city_activity_matrix = np.array(list(city_activity_mapping.values()))
@@ -53,9 +61,68 @@ activities = ['churches', 'resorts', 'beaches', 'parks', 'theatres', 'museums', 
               'restaurants', 'art galleries', 'dance clubs', 'swimming pools', 'gyms', 'bakeries',
               'beauty & spas', 'cafes', 'view points', 'monuments', 'gardens', 'gardens']
 
+#Get user location city
+def get_user_city(ip):
+    url = f"http://ip-api.com/json/{ip}"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data['status'] == 'success':
+            return data['city']
+    return 'Chapel Hill'
+
+#TripAdvisor API Call - fetches top attraction
+def get_top_attraction(city, category):
+    url = f"https://api.tripadvisor.com/api/partner/2.0/location/{city}/attractions"
+    headers = {'Authorization': f'Bearer {TRIPADVISOR_API_KEY}'}
+    params = {
+        'category': category,
+        'limit': 1  
+    }
+    response = requests.get(url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data['data']:
+            top_attraction = data['data'][0]
+            return top_attraction['name']
+    return None
+
+#flight getter - skyscanner API call
+def get_flights(origin, destination):
+    auth_url = 'https://test.api.amadeus.com/v1/security/oauth2/token'
+    auth_data = {
+        'grant_type': 'client_credentials',
+        'client_id': AMADEUS_API_KEY,
+        'client_secret': AMADEUS_API_SECRET,
+    }
+    auth_response = requests.post(auth_url, data=auth_data)
+    if auth_response.status_code != 200:
+        return []
+
+    access_token = auth_response.json().get('access_token')
+
+    url = f'https://test.api.amadeus.com/v2/shopping/flight-offers'
+    headers = {'Authorization': f'Bearer {access_token}'}
+    params = {
+        'origin': origin,
+        'destination': destination,
+        'departureDate': '2024-10-04',
+        'adults': 1,
+        'maxPrice': 1000
+    }
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        return response.json().get('data', [])
+    return []
+
+
 #City Recommender
 @app.route('/recommend_cities', methods=['POST'])
 def recommend_cities():
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    user_city = get_user_city(user_ip)
     user_data = request.json
     selected_activities = user_data.get('activities', [])
     
@@ -67,8 +134,16 @@ def recommend_cities():
     city_similarity = cosine_similarity([user_vector], city_activity_matrix)[0]
     similar_cities_indices = city_similarity.argsort()[-5:][::-1]
     recommended_cities = [cities[i] for i in similar_cities_indices]
+
+    top_city = recommended_cities[0]
+    itinerary = {activity: get_top_attraction(top_city, activity) for activity in selected_activities}
+    flight_info = get_flights(user_city, top_city)
     
-    return jsonify({'recommended_cities': recommended_cities})
+    return jsonify({
+        'recommended_cities': recommended_cities,
+        'itinerary': itinerary,
+        'flight_info': flight_info
+        })
 
 #Activity recommendation
 @app.route('/recommend_activities', methods=['POST'])
